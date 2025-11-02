@@ -7,10 +7,10 @@ const app = express()
 app.use(express.static('dist'))
 app.use(express.json())
 
-morgan.token('data', function(req, res) {
+morgan.token('data', function(req, _res) {
   return JSON.stringify(req.body)
 })
-app.use(morgan(":method :url :status :res[content-length] - :response-time ms :data"))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 
 const PORT = process.env.PORT || 3001
 
@@ -34,7 +34,7 @@ app.post('/api/persons', (request, response, next) => {
 
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
   Person.findById(request.params.id)
@@ -69,7 +69,7 @@ app.get('/info', (request, response, next) => {
       const res = `
         <p>Phonebook has info for ${personCount} people</p>
         <p>${new Date().toString()}</p>
-        `;
+        `
       response.send(res)
     })
     .catch(error => next(error))
@@ -91,7 +91,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.delete('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   Person.findByIdAndDelete(id)
-    .then(result => {
+    .then(_result => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -108,7 +108,7 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
-     return response.status(400).json({ error: error.message })
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
