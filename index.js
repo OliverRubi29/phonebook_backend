@@ -46,7 +46,7 @@ app.put('/api/persons/:id', (request, response, next) => {
       person.name = name
       person.number = number
 
-      const opts = { runValidators: true };
+      const opts = { runValidators: true }
       return person.save(opts).then(updatedPerson => {
         response.json(updatedPerson)
       }).catch(error => next(error))
